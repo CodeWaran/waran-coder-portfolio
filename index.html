@@ -113,6 +113,54 @@
             bottom: 0;
         }
     </style>
+    <script>
+        // Detect DevTools using dimensions
+        let devtools = { open: false };
+        let threshold = 160;
+
+        setInterval(function () {
+            const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+            const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+            if (widthThreshold || heightThreshold) {
+                if (!devtools.open) {
+                    devtools.open = true;
+                    document.body.innerHTML = '<h1>Access Denied</h1>';
+                }
+            } else {
+                devtools.open = false;
+            }
+        }, 500);
+
+        // Block F12, Ctrl+Shift+I/J/C/U
+        document.addEventListener('keydown', function (e) {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
+                (e.ctrlKey && e.key === 'U')
+            ) {
+                e.preventDefault();
+                alert('Action Blocked');
+            }
+        });
+
+        // Block Right Click
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        // Extra trick: 'debugger' trap
+        (function() {
+            function detectDebugger() {
+                const start = performance.now();
+                debugger;
+                const end = performance.now();
+                if (end - start > 100) {
+                    document.body.innerHTML = '<h1>Debugger Detected</h1>';
+                }
+            }
+            setInterval(detectDebugger, 1000);
+        })();
+    </script>
 </head>
 <body>
     <header>
